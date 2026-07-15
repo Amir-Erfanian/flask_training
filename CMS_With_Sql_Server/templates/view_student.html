@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Student Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4><i class="bi bi-person"></i> Student Details</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Student ID</dt>
+                            <dd class="col-sm-8">{{ student.StudentID }}</dd>
+                            
+                            <dt class="col-sm-4">Full Name</dt>
+                            <dd class="col-sm-8">{{ student.full_name }}</dd>
+                            
+                            <dt class="col-sm-4">Email</dt>
+                            <dd class="col-sm-8">{{ student.Email }}</dd>
+                            
+                            <dt class="col-sm-4">Phone</dt>
+                            <dd class="col-sm-8">{{ student.Phone or '-' }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Date of Birth</dt>
+                            <dd class="col-sm-8">{{ student.DateOfBirth.strftime('%B %d, %Y') if student.DateOfBirth else '-' }}</dd>
+                            
+                            <dt class="col-sm-4">Course</dt>
+                            <dd class="col-sm-8">{{ student.Course or '-' }}</dd>
+                            
+                            <dt class="col-sm-4">GPA</dt>
+                            <dd class="col-sm-8">
+                                {% if student.GPA %}
+                                    <span class="badge bg-{% if student.GPA >= 3.5 %}success{% elif student.GPA >= 3.0 %}primary{% elif student.GPA >= 2.5 %}warning{% else %}danger{% endif %}">
+                                        {{ "%.2f"|format(student.GPA) }}
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Status</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge bg-{{ 'success' if student.IsActive else 'secondary' }}">
+                                    {{ 'Active' if student.IsActive else 'Inactive' }}
+                                </span>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                    <a href="{{ url_for('edit_student', id=student.StudentID) }}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    {% if student.IsActive %}
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" 
+                            data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to deactivate <strong>{{ student.full_name }}</strong>?</p>
+                <p class="text-muted small">This will hide the student from the main list but keep their data.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('delete_student', id=student.StudentID) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Yes, Deactivate</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
