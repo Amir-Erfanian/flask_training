@@ -34,7 +34,15 @@
             <div>
 
                 {% if current_user.is_authenticated %}
+                {% if current_user.is_admin %}
 
+                <a class="btn btn-warning me-2" href="{{ url_for('admin') }}">
+
+                    Admin
+
+                </a>
+
+                {% endif %}
                 <a class="btn btn-outline-info me-2" href="{{ url_for('profile') }}">
 
                     Profile

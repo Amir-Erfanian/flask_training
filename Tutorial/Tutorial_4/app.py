@@ -10,25 +10,39 @@ from flask_login import (
     current_user
 )
 
-from werkzeug.security import (
-    generate_password_hash,
-    check_password_hash
-)
+from werkzeug.security import (generate_password_hash,check_password_hash)
+
+from functools import wraps
+def admin_required(f):
+
+    @wraps(f)
+
+    def decorated_function(*args, **kwargs):
+
+        if not current_user.is_admin:
+
+            flash(
+                "Administrator access required.",
+                "danger"
+            )
+
+            return redirect(url_for("dashboard"))
+
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] ="alksfjlj34"
-
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
-
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
-
 login_manager.init_app(app)
-
 login_manager.login_view = "login"
 
 class User(UserMixin, db.Model):
@@ -54,7 +68,12 @@ class User(UserMixin, db.Model):
         db.String(255),
         nullable=False
     )
-    
+
+    is_admin = db.Column(
+        db.Boolean,
+        default=False
+    )
+        
 with app.app_context():
     db.create_all()
 
@@ -292,9 +311,18 @@ def change_password():
 
     return render_template("change_password.html")
 
+@app.route("/admin")
+@login_required
+@admin_required
+def admin():
 
-
-
+    total_users = User.query.count()
+    users = User.query.all()
+    return render_template(
+        "admin.html",
+        total_users=total_users,
+        users = users
+    )
 
 
 
