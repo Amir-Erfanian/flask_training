@@ -164,5 +164,139 @@ def logout():
 
     return redirect(url_for("login"))
 
+
+@app.route("/profile")
+@login_required
+def profile():
+
+    return render_template(
+        "profile.html",
+        user=current_user
+    )
+
+@app.route("/profile/edit", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+
+    if request.method == "POST":
+
+        email = request.form["email"].strip().lower()
+
+        existing_user = User.query.filter_by(email=email).first()
+
+        if existing_user and existing_user.id != current_user.id:
+
+            flash(
+                "Email is already in use.",
+                "danger"
+            )
+
+            return redirect(url_for("edit_profile"))
+
+        current_user.email = email
+
+        db.session.commit()
+
+        flash(
+            "Profile updated successfully!",
+            "success"
+        )
+
+        return redirect(url_for("profile"))
+
+    return render_template("edit_profile.html")
+
+
+
+@app.route("/change-password", methods=["GET", "POST"])
+@login_required
+def change_password():
+
+    if request.method == "POST":
+
+        current_password = request.form["current_password"]
+
+        new_password = request.form["new_password"]
+
+        confirm_password = request.form["confirm_password"]
+
+        # Check current password
+
+        if not check_password_hash(
+            current_user.password,
+            current_password
+        ):
+
+            flash(
+                "Current password is incorrect.",
+                "danger"
+            )
+
+            return redirect(url_for("change_password"))
+
+        # Password length
+
+        if len(new_password) < 8:
+
+            flash(
+                "Password must be at least 8 characters.",
+                "warning"
+            )
+
+            return redirect(url_for("change_password"))
+
+        # Match confirmation
+
+        if new_password != confirm_password:
+
+            flash(
+                "Passwords do not match.",
+                "warning"
+            )
+
+            return redirect(url_for("change_password"))
+
+        # Optional: don't allow the same password again
+
+        if check_password_hash(
+            current_user.password,
+            new_password
+        ):
+
+            flash(
+                "New password must be different.",
+                "warning"
+            )
+
+            return redirect(url_for("change_password"))
+
+        current_user.password = generate_password_hash(
+            new_password
+        )
+
+        db.session.commit()
+
+        flash(
+            "Password changed successfully!",
+            "success"
+        )
+
+        logout_user()
+
+        flash(
+            "Password changed successfully. Please log in again.",
+            "success"
+        )
+
+        return redirect(url_for("login"))
+
+    return render_template("change_password.html")
+
+
+
+
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
