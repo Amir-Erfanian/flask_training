@@ -20,10 +20,34 @@ class Student(db.Model):
 def index():
     return redirect(url_for("students"))
 
+from flask import request
+
 @app.route("/students")
 def students():
-    students = Student.query.all()
-    return render_template("students.html", students=students)
+
+    search = request.args.get("search", "")
+    major = request.args.get("major", "")
+
+    query = Student.query
+
+    if search:
+        query = query.filter(Student.name.contains(search))
+
+    if major:
+        query = query.filter(Student.major == major)
+
+    students = query.all()
+
+    majors = db.session.query(Student.major).distinct().all()
+
+    return render_template(
+        "students.html",
+        students=students,
+        majors=majors,
+        total=len(students),
+        search=search,
+        selected_major=major
+    )
 
 @app.route("/student/<int:id>")
 def student(id):
