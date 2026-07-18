@@ -1,0 +1,50 @@
+
+
+<div class="row justify-content-center">
+
+    <div class="col-md-6">
+
+        <div class="card shadow">
+
+            <div class="card-header">
+
+                <h3>Upload Image</h3>
+
+            </div>
+
+            <div class="card-body">
+
+                <form method="POST" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+
+                        <input class="form-control" type="file" name="image" accept=".png,.jpg,.jpeg,.gif">
+
+                    </div>
+
+                    <button class="btn btn-primary">
+
+                        Upload
+
+                    </button>
+
+                </form>
+
+                {% if filename %}
+
+                <hr>
+
+                <h5>Uploaded Image</h5>
+
+                <img src="{{ url_for('static', filename='uploads/' + filename) }}" class="img-fluid rounded shadow">
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
