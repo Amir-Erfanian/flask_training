@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Student List{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-6">
+                <i class="fas fa-users"></i> Student Directory
+            </h1>
+            <span class="badge bg-primary fs-6">
+                Total: {{ students|length }}
+            </span>
+        </div>
+
+        {% if students %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Major</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td><strong>{{ student.id }}</strong></td>
+                        <td>
+                            <a href="{{ url_for('student', id=student.id) }}" class="text-decoration-none">
+                                {{ student.name }}
+                            </a>
+                        </td>
+                        <td><span class="badge bg-info">{{ student.age }}</span></td>
+                        <td><span class="badge bg-secondary">{{ student.major }}</span></td>
+                        <td>
+                            <div class="d-flex gap-1 justify-content-center">
+                                <a href="{{ url_for('student', id=student.id) }}" 
+                                   class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ url_for('edit', id=student.id) }}" 
+                                   class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ url_for('delete', id=student.id) }}" 
+                                      method="POST" 
+                                      class="d-inline">
+                                    <button type="submit" 
+                                            class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('Delete {{ student.name }}?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-user-graduate fa-5x text-muted mb-3"></i>
+            <h3>No Students Found</h3>
+            <p class="text-muted">Add your first student to get started.</p>
+            <a href="{{ url_for('add') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Student
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

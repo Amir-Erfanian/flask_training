@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('students') }}">Students</a></li>
+                <li class="breadcrumb-item active">{{ student.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-graduate"></i> Student Profile
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="text-muted text-uppercase small fw-bold">ID</label>
+                        <p class="fs-4 fw-bold text-primary">#{{ student.id }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted text-uppercase small fw-bold">Name</label>
+                        <p class="fs-4">{{ student.name }}</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="text-muted text-uppercase small fw-bold">Age</label>
+                        <p><span class="badge bg-info fs-6">{{ student.age }}</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted text-uppercase small fw-bold">Major</label>
+                        <p><span class="badge bg-secondary fs-6">{{ student.major }}</span></p>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('students') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                    <a href="{{ url_for('edit', id=student.id) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <form action="{{ url_for('delete', id=student.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger" 
+                                onclick="return confirm('Delete {{ student.name }}?')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
